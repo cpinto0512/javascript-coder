@@ -36,7 +36,8 @@ const mostrarCarrito = () => {
     carritocompras.innerHTML = "";
     carrito.forEach((prod) => {
       const li = document.createElement("li");
-      li.innerText = `${prod.nombre} x ${prod.cantidad}und`;
+      let totalproducto = prod.cantidad * prod.precio
+      li.innerText = `${prod.nombre} x ${prod.cantidad}und = S/${totalproducto}`;
       carritocompras.appendChild(li);
     });
   }
