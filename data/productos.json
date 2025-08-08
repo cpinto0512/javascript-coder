@@ -1,0 +1,27 @@
+[
+    {
+        "nombre": "Almendras deshidratadas 130g",
+        "precio": 7,
+        "id": 101
+    },
+    {
+        "nombre": "Cashews activados 130g",
+        "precio": 7,
+        "id": 102
+    },
+    {
+        "nombre": "Castañas activadas 130g",
+        "precio": 8,
+        "id": 103
+    },
+    {
+        "nombre": "Pecanas activadas 100g",
+        "precio": 7,
+        "id": 104
+    },
+    {
+        "nombre": "Pistachos activados 100g",
+        "precio": 10,
+        "id": 105
+    }
+]

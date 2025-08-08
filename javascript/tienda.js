@@ -1,16 +1,20 @@
-const productos = [
-  { nombre: "Almendras deshidratadas 130g", precio: 7, id: 101 },
-  { nombre: "Cashews activados 130g", precio: 7, id: 102 },
-  { nombre: "Castañas activadas 130g", precio: 8, id: 103 },
-  { nombre: "Pecanas activadas 100g", precio: 7, id: 104 },
-  { nombre: "Pistachos activads 100g", precio: 10, id: 105 },
-];
-
 let carrito = JSON.parse(localStorage.getItem("carrito")) || [];
 const listaProd = document.getElementById("listaProd");
 const carritocompras = document.getElementById("carritocompras");
 const botonCompra = document.getElementById("btnComprar");
 const botonVaciar = document.getElementById("btnVaciar");
+let productos = [];
+
+const traerProductos = async () => {
+  try {
+    const productosJson = await fetch("./data/productos.json");
+    const productosProcesados = await productosJson.json();
+    productos = productosProcesados;
+    mostrarProd();
+  } catch (error) {
+    listaProd.innerText = "ERROR 404 :( No se encontraron los productos";
+  }
+};
 
 const totalCarrito = () => {
   let total = carrito.reduce((suma, elemento) => {
@@ -84,17 +88,32 @@ const retirarCarrito = (prod) => {
   guardarCarrito();
 };
 
-function mostrarProd() {
+const mostrarProd = () => {
   listaProd.innerHTML = "";
   productos.forEach((prod) => {
-    const li = document.createElement("li");
+    //const li = document.createElement("li");
     const div = document.createElement("div");
-    const btnAdd = document.createElement("button");
-    const btnRemove = document.createElement("button");
 
-    li.id = prod.id;
-    div.innerText = `${prod.nombre} - S/${prod.precio}`;
+    //li.id = prod.id;
+    div.innerHTML = `
+    <div class="card" style="width: 18rem;">
+      <img src="../img/${prod.id}.jpg" class="card-img-top" alt="${prod.nombre}" style="
+    height: 190px;">
+        <h5 class="card-title">${prod.nombre} - S/${prod.precio}</h5>
+        <div  style="display:flex;justify-content: space-evenly;flex-wrap:wrap ;">
+        <button id=btnAdd${prod.id} class="btn btn-outline-success">Añadir</button>
+        <button id=btnRemove${prod.id} class="btn btn-outline-danger">Quitar</button>
+        </div>
+      </div>
+    </div>`;
+
+    //li.appendChild(div);
+    listaProd.appendChild(div);
+
+    const btnAdd = document.getElementById(`btnAdd${prod.id}`);
+
     btnAdd.innerText = "Añadir";
+    btnAdd.className = "btn btn-outline-success";
     btnAdd.addEventListener("click", () => {
       agregarCarrito(prod);
       Toastify({
@@ -108,63 +127,49 @@ function mostrarProd() {
       }).showToast();
     });
 
-    btnRemove.innerText = "Quitar";
+    const btnRemove = document.getElementById(`btnRemove${prod.id}`);
     btnRemove.addEventListener("click", () => {
       const productoExistente = carrito.find((item) => item.id === prod.id);
       if (!productoExistente) {
         Toastify({
-        text: `No tienes ${prod.nombre} en el carrito`,
-        position: "center",
-        close: true,
-        duration: 2500,
-        style: {
-          background: "linear-gradient(to right, #ff4b5c, #ff9a8b)",
-        },
-      }).showToast();
-        
+          text: `No tienes ${prod.nombre} en el carrito`,
+          position: "center",
+          close: true,
+          duration: 2500,
+          style: {
+            background: "linear-gradient(to right, #ff4b5c, #ff9a8b)",
+          },
+        }).showToast();
       } else {
         retirarCarrito(prod);
-       Toastify({
-        text: `Se retiraron ${prod.nombre} del carrito`,
-        position: "center",
-        close: true,
-        duration: 2500,
-        style: {
-          background: "linear-gradient(to right, #ff4b5c, #ff9a8b)",
-        },
-      }).showToast();
+        Toastify({
+          text: `Se retiraron ${prod.nombre} del carrito`,
+          position: "center",
+          close: true,
+          duration: 2500,
+          style: {
+            background: "linear-gradient(to right, #ff4b5c, #ff9a8b)",
+          },
+        }).showToast();
       }
     });
-
-    li.appendChild(div);
-    li.appendChild(btnAdd);
-    li.appendChild(btnRemove);
-    listaProd.appendChild(li);
   });
-}
+};
 
 //logica para borrar carrito luego del check out
 const comprar = () => {
   if (totalCarrito() > 0) {
-    Toastify({
-      text: "Gracias por su compra",
-      position: "center",
-      duration: 3000,
-      backgroundColor: "green",
-    }).showToast();
-
+    Swal.fire({
+      title: "Success!",
+      text: "¡Gracias por su compra!",
+      icon: "success",
+    });
   } else {
-    Toastify({
-        text: "El carrito esta vacio. Agregue un producto antes de darle click a Finalizar Compra",
-        position: "center",
-        close: true,
-        duration: 3000,
-        style: {
-          color: "#4b4141ff",
-          background: "linear-gradient(to right, #f6d365, #fda085)",
-        },
-      }).showToast();
-      
+    Swal.fire({
+      title: "Oops..!",
+      text: "El carrito esta vacio. Agregue un producto antes de darle click a Finalizar Compra",
+      icon: "error",
+    });
   }
   vaciarCarrito();
 };
@@ -172,20 +177,33 @@ const comprar = () => {
 botonCompra.onclick = comprar;
 botonVaciar.addEventListener("click", () => {
   vaciarCarrito();
-  Toastify({
-        text: "El carrito fue vaciado satisfactoriamente",
-        position: "center",
-        close: true,
-        duration: 2000,
-        style: {
-          color: "#4b4141ff",
-          background: "linear-gradient(to right, #f6d365, #fda085)",
-        },
-      }).showToast();
-})
+  if (totalCarrito() > 0) {
+    Toastify({
+      text: "El carrito fue vaciado satisfactoriamente",
+      position: "center",
+      close: true,
+      duration: 2000,
+      style: {
+        color: "#4b4141ff",
+        background: "linear-gradient(to right, #f6d365, #fda085)",
+      },
+    }).showToast();
+  } else {
+    Toastify({
+      text: "El carrito ya está vacio",
+      position: "center",
+      close: true,
+      duration: 2000,
+      style: {
+        color: "#4b4141ff",
+        background: "linear-gradient(to right, #f6d365, #fda085)",
+      },
+    }).showToast();
+  }
+});
 
 function inicializar() {
-  mostrarProd();
+  traerProductos();
   mostrarCarrito();
   mostrarTotal();
 }
