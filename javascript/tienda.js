@@ -97,7 +97,7 @@ const mostrarProd = () => {
     //li.id = prod.id;
     div.innerHTML = `
     <div class="card" style="width: 18rem;">
-      <img src="../img/${prod.id}.jpg" class="card-img-top" alt="${prod.nombre}" style="
+      <img src="./img/${prod.id}.jpg" class="card-img-top" alt="${prod.nombre}" style="
     height: 190px;">
         <h5 class="card-title">${prod.nombre} - S/${prod.precio}</h5>
         <div  style="display:flex;justify-content: space-evenly;flex-wrap:wrap ;">
