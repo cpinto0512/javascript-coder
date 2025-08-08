@@ -36,7 +36,7 @@ const mostrarCarrito = () => {
     carritocompras.innerHTML = "";
     carrito.forEach((prod) => {
       const li = document.createElement("li");
-      let totalproducto = prod.cantidad * prod.precio
+      let totalproducto = prod.cantidad * prod.precio;
       li.innerText = `${prod.nombre} x ${prod.cantidad}und = S/${totalproducto}`;
       carritocompras.appendChild(li);
     });
@@ -51,7 +51,7 @@ const vaciarCarrito = () => {
 };
 
 const agregarCarrito = (prod) => {
-  // Buscar si el producto ya está en el carrito
+  // Ver si el producto ya está en el carrito
   const productoExistente = carrito.find((item) => item.id === prod.id);
 
   if (productoExistente) {
@@ -67,7 +67,7 @@ const agregarCarrito = (prod) => {
 };
 
 const retirarCarrito = (prod) => {
-  // Buscar si el producto ya está en el carrito
+  // Ver si el producto ya está en el carrito
   const productoExistente = carrito.find((item) => item.id === prod.id);
 
   if (productoExistente) {
@@ -97,23 +97,43 @@ function mostrarProd() {
     btnAdd.innerText = "Añadir";
     btnAdd.addEventListener("click", () => {
       agregarCarrito(prod);
-      const agregarProducto = document.getElementById("productoAgregado");
-      agregarProducto.innerText = `Se agregaron ${prod.nombre} al carrito`;
-      agradecimiento.innerText = "";
+      Toastify({
+        text: `Se agregaron ${prod.nombre} al carrito`,
+        position: "center",
+        close: true,
+        duration: 1500,
+        style: {
+          background: "linear-gradient(to right, #34e89e, #0f9b8e)",
+        },
+      }).showToast();
     });
 
     btnRemove.innerText = "Quitar";
     btnRemove.addEventListener("click", () => {
       const productoExistente = carrito.find((item) => item.id === prod.id);
       if (!productoExistente) {
-        const retirarProducto = document.getElementById("productoAgregado");
-        retirarProducto.innerText = `No tienes ${prod.nombre} en el carrito`;
+        Toastify({
+        text: `No tienes ${prod.nombre} en el carrito`,
+        position: "center",
+        close: true,
+        duration: 2500,
+        style: {
+          background: "linear-gradient(to right, #ff4b5c, #ff9a8b)",
+        },
+      }).showToast();
+        
       } else {
         retirarCarrito(prod);
-        const retirarProducto = document.getElementById("productoAgregado");
-        retirarProducto.innerText = `Se retiraron ${prod.nombre} del carrito`;
+       Toastify({
+        text: `Se retiraron ${prod.nombre} del carrito`,
+        position: "center",
+        close: true,
+        duration: 2500,
+        style: {
+          background: "linear-gradient(to right, #ff4b5c, #ff9a8b)",
+        },
+      }).showToast();
       }
-      agradecimiento.innerText = "";
     });
 
     li.appendChild(div);
@@ -125,19 +145,44 @@ function mostrarProd() {
 
 //logica para borrar carrito luego del check out
 const comprar = () => {
-  const agradecimiento = document.getElementById("agradecimiento");
   if (totalCarrito() > 0) {
-    agradecimiento.innerText = "Gracias por su compra";
+    Toastify({
+      text: "Gracias por su compra",
+      position: "center",
+      duration: 3000,
+      backgroundColor: "green",
+    }).showToast();
+
   } else {
-    agradecimiento.innerText =
-      "El carrito esta vacio. Agregue un producto antes de darle click a Finalizar Compra";
+    Toastify({
+        text: "El carrito esta vacio. Agregue un producto antes de darle click a Finalizar Compra",
+        position: "center",
+        close: true,
+        duration: 3000,
+        style: {
+          color: "#4b4141ff",
+          background: "linear-gradient(to right, #f6d365, #fda085)",
+        },
+      }).showToast();
+      
   }
   vaciarCarrito();
-  const agregarProducto = document.getElementById("productoAgregado");
-  agregarProducto.innerText = "";
 };
+
 botonCompra.onclick = comprar;
-botonVaciar.onclick = vaciarCarrito;
+botonVaciar.addEventListener("click", () => {
+  vaciarCarrito();
+  Toastify({
+        text: "El carrito fue vaciado satisfactoriamente",
+        position: "center",
+        close: true,
+        duration: 2000,
+        style: {
+          color: "#4b4141ff",
+          background: "linear-gradient(to right, #f6d365, #fda085)",
+        },
+      }).showToast();
+})
 
 function inicializar() {
   mostrarProd();
